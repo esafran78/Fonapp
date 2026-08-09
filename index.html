@@ -82,22 +82,60 @@ body {
   color: #fff;
 }
 
+/* X (Twitter) Özel Kutu Stili */
 .sidebar-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 12px;
-  padding: 16px;
+  padding: 20px 16px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
-.sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+.sidebar-card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+  width: 120px;
+  height: 120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff' opacity='0.04'%3E%3Cpath d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.sidebar-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; position: relative; z-index: 1; }
 .x-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   color: #fff;
   text-decoration: none;
   font-weight: 700;
   font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+  width: 100%;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.x-link:hover {
+  background: #fff;
+  color: #000;
 }
 
 .main-content {
@@ -339,6 +377,31 @@ body {
   color: #fff;
 }
 
+/* SPK Yasal Uyarı Paneli Stilleri */
+.disclaimer-card {
+  margin-top: 28px;
+  background: rgba(18, 19, 22, 0.6);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.disclaimer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.disclaimer-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 .hidden { display: none !important; }
 .err-msg { color: var(--red); font-size: 12px; margin-top: 12px; }
 
@@ -368,10 +431,14 @@ body {
       </ul>
     </div>
 
+    <!-- Yenilenmiş X Kutusu -->
     <div class="sidebar-card">
-      <p>X'te Takip Edin</p>
+      <p>Güncel Analizler İçin</p>
       <a href="https://x.com/esafrann1?s=11&t=c_dZPK9xTrLpiuTlp0X63A" target="_blank" class="x-link">
-        <span>𝕏</span> @esafrann1
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        @esafrann1
       </a>
     </div>
   </aside>
@@ -446,7 +513,6 @@ body {
         </div>
       </div>
 
-      <!-- YÖNTEM 3: Manuel Ağırlık Güncelleme Paneli -->
       <div id="quickEditPanel" class="edit-panel hidden">
         <span style="font-size:12px; font-weight:700; color:var(--primary);">Hızlı Ağırlık/Lot Değiştir:</span>
         <select id="editStockSelect"></select>
@@ -475,6 +541,17 @@ body {
 
       <div id="err" class="err-msg"></div>
     </section>
+
+    <!-- SPK Yasal Uyarı Metni -->
+    <footer class="disclaimer-card">
+      <div class="disclaimer-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        Yasal Uyarı / SPK Bilgilendirmesi
+      </div>
+      <p class="disclaimer-text">
+        Bu web sitesinde yer alan tüm veri, grafik, oran ve hesaplanan tahmini getiriler yalnızca genel bilgilendirme amacıyla sunulmaktadır. Burada yer alan hiçbir bilgi, yorum veya istatistiki değer <strong>YATIRIM TAVSİYESİ</strong> niteliği taşımamaktadır. Sermaye Piyasası Kurulunun (SPK) Yatırım Hizmetleri ve Faaliyetleri ile Yan Hizmetlere İlişkin Esaslar Hakkında Tebliği uyarınca, burada yer alan bilgiler yatırım danışmanlığı kapsamında değerlendirilemez. Yatırım danışmanlığı hizmeti; yetkili aracı kurumlar, portföy yönetim şirketleri veya mevduat kabul etmeyen bankalar ile müşteri arasında imzalanacak yatırım danışmanlığı sözleşmesi çerçevesinde sunulmaktadır. Buradaki hesaplamalar açık veriler ve matematiksel simülasyonlar kullanılarak üretilmekte olup kesinlik içermez; yatırım kararlarınızın yalnızca bu bilgilere dayandırılarak alınması beklentilerinize uygun sonuçlar doğurmayabilir.
+      </p>
+    </footer>
   </main>
 </div>
 
@@ -520,7 +597,6 @@ function toggleShowAll(){
   render();
 }
 
-// YÖNTEM 3 FONKSİYONLARI: Hızlı Düzenleme Paneli Mantığı
 function toggleEditPanel() {
   const panel = document.getElementById("quickEditPanel");
   panel.classList.toggle("hidden");
@@ -667,7 +743,7 @@ async function refresh(){
     render();
   } catch(e) {
     document.getElementById("status").textContent = "Bağlantı Hatası";
-    document.getElementById("err").textContent = "Yerel veri sunucusu çalışmıyor. BASLAT.bat dosyasını tekrar çalıştırın.";
+    document.getElementById("err").textContent = "Yerel veri sunucusu çalışmıyor.";
   }
 }
 
