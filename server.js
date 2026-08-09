@@ -13,11 +13,29 @@ const symbols = [
 
 const fundSymbols = ["HMV","T3B","ABG","TMM","KVR","PFS"];
 
+// Önbellek Belleği
+let cachedData = {
+  okCount: 0,
+  data: [],
+  errors: [],
+  updated: null
+};
+
+// Yahoo Finance Veri Çekme
 async function getYahoo(symbol) {
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.IS?range=5d&interval=1d&includePrePost=false`;
-    const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 10000 });
-    const meta = res.data.chart.result[0].meta;
+    const res = await axios.get(url, { 
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json'
+      }, 
+      timeout: 5000 
+    });
+    
+    const meta = res.data?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+
     let current = meta.regularMarketPrice ?? meta.previousClose;
     let prev = meta.previousClose;
 
@@ -31,12 +49,13 @@ async function getYahoo(symbol) {
   }
 }
 
+// TEFAS Veri Çekme
 async function getOneTefasFund(symbol) {
   try {
     const detailUrl = `https://www.tefas.gov.tr/tr/fon-detayli-analiz/${symbol}`;
     const apiUrl = "https://www.tefas.gov.tr/api/funds/fonFiyatBilgiGetir";
     const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json',
       'Origin': 'https://www.tefas.gov.tr',
@@ -44,8 +63,8 @@ async function getOneTefasFund(symbol) {
     };
 
     const payload = { fonKodu: symbol, dil: "TR", periyod: 12 };
-    const res = await axios.post(apiUrl, payload, { headers, timeout: 10000 });
-    const rows = res.data.resultList || [];
+    const res = await axios.post(apiUrl, payload, { headers, timeout: 5000 });
+    const rows = res.data?.resultList || [];
 
     const priced = rows.map(r => ({
       price: parseFloat(String(r.fiyat || r.price || '').replace(',', '.')),
@@ -63,15 +82,8 @@ async function getOneTefasFund(symbol) {
   }
 }
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/api/provider', (req, res) => {
-  res.json({ provider: "Yahoo Finance & TEFAS (Node.js)", mode: "cloud", realtimeReady: false });
-});
-
-app.get('/api/prices', async (req, res) => {
+// Tüm Verileri Güncelleyen Arka Plan Görevi
+async function updateMarketData() {
   const out = [];
   const errors = [];
 
@@ -89,14 +101,32 @@ app.get('/api/prices', async (req, res) => {
 
   await Promise.all([...stockPromises, ...fundPromises]);
 
-  res.json({
+  cachedData = {
     okCount: out.length,
     data: out,
     errors,
     updated: new Date().toISOString()
-  });
+  };
+}
+
+// Uygulama başladığında ve her 30 saniyede bir veriyi güncelle
+updateMarketData();
+setInterval(updateMarketData, 30000);
+
+// Endpoint'ler
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/api/provider', (req, res) => {
+  res.json({ provider: "Yahoo Finance & TEFAS (Cached Node.js)", mode: "cloud", realtimeReady: true });
+});
+
+app.get('/api/prices', (req, res) => {
+  // Harici API'lere istek atmak yerine direkt hafızadaki veriyi anında döndürür
+  res.json(cachedData);
 });
 
 app.listen(PORT, () => {
-  console.log(`Sunucu ${PORT} portunda aktif.`);
+  console.log(`Sunucu ${PORT} portunda aktif ve önbellekleme etkin.`);
 });
