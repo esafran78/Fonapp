@@ -7,9 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- Chart.js Kütüphanesi -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 :root {
   --bg-dark: #0a0b0d;
@@ -80,8 +77,12 @@ body {
   border-radius: 8px;
   transition: all 0.2s;
 }
-.nav-item.active a { background: var(--primary); color: #fff; }
+.nav-item.active a {
+  background: var(--primary);
+  color: #fff;
+}
 
+/* X (Twitter) Özel Kutu Stili */
 .sidebar-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -107,6 +108,11 @@ body {
   pointer-events: none;
 }
 
+.sidebar-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
 .sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; position: relative; z-index: 1; }
 .x-link {
   display: inline-flex;
@@ -126,7 +132,11 @@ body {
   position: relative;
   z-index: 1;
 }
-.x-link:hover { background: #fff; color: #000; }
+
+.x-link:hover {
+  background: #fff;
+  color: #000;
+}
 
 .main-content {
   flex: 1;
@@ -146,18 +156,8 @@ body {
 .header-status {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
-
-.bist-badge {
-  background: var(--panel-bg);
-  border: 1px solid var(--card-border);
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .time-badge {
   display: flex;
   align-items: center;
@@ -170,6 +170,15 @@ body {
   font-weight: 700;
 }
 .time-badge .time-val { color: var(--primary); }
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0, 230, 118, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+}
 
 .funds-grid {
   display: grid;
@@ -188,7 +197,19 @@ body {
   position: relative;
   overflow: hidden;
 }
-.fund-card:hover { transform: translateY(-2px); }
+.fund-card:hover {
+  transform: translateY(-2px);
+}
+
+.fund-card.neon-positive {
+  border-color: rgba(0, 230, 118, 0.6) !important;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.25), inset 0 0 10px rgba(0, 230, 118, 0.1) !important;
+}
+
+.fund-card.neon-negative {
+  border-color: rgba(255, 61, 0, 0.6) !important;
+  box-shadow: 0 0 15px rgba(255, 61, 0, 0.25), inset 0 0 10px rgba(255, 61, 0, 0.1) !important;
+}
 
 .fund-card.active::before {
   content: '';
@@ -198,9 +219,7 @@ body {
 }
 
 .fund-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.fund-code { font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
-.fav-star { cursor: pointer; color: var(--text-muted); font-size: 16px; transition: color 0.2s; }
-.fav-star.active { color: #ffca28; }
+.fund-code { font-size: 20px; font-weight: 800; color: #fff; }
 .fund-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
 .fund-metric {
@@ -222,101 +241,20 @@ body {
 .fund-badge.pos { background: var(--green-bg); color: var(--green); }
 .fund-badge.neg { background: var(--red-bg); color: var(--red); }
 
-/* İki Sütunlu Izgara (Grafik + Tablo / Simülatör) */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 20px;
-  margin-bottom: 28px;
-}
-
 .table-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 14px;
   padding: 20px;
 }
-
-.side-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.chart-card, .simulator-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 20px;
-}
-
-.card-title {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.chart-container {
-  position: relative;
-  height: 220px;
-  width: 100%;
-}
-
-.sim-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.sim-input-group label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-.sim-input-group input {
-  background: #121316;
-  border: 1px solid var(--card-border);
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  outline: none;
-}
-
-.sim-result {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--card-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.sim-val { font-size: 18px; font-weight: 800; }
-
-.search-bar-wrap {
-  margin-bottom: 14px;
-  position: relative;
-}
-.search-input {
-  width: 100%;
-  background: #121316;
-  border: 1px solid var(--card-border);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  outline: none;
-}
-
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
-.table-title { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+.table-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+.table-title span { color: var(--primary); }
 
 .btn-group { display: flex; gap: 8px; }
 
@@ -324,7 +262,7 @@ body {
   background: var(--primary);
   color: #fff;
   border: none;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   font-weight: 700;
   font-size: 12px;
@@ -338,14 +276,15 @@ body {
 .edit-btn:hover { background: #2c3038; color: #fff; }
 .refresh-btn:hover { background: var(--primary-hover); }
 
+/* YÖNTEM 3: Hızlı Düzenleme Paneli Stili */
 .edit-panel {
   background: #121316;
   border: 1px solid var(--primary);
   border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -353,16 +292,31 @@ body {
   background: #16181d;
   border: 1px solid var(--card-border);
   color: #fff;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   outline: none;
+}
+.edit-panel input { width: 110px; }
+.save-btn {
+  background: var(--green);
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .table-wrapper { width: 100%; overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
 .data-table th {
-  padding: 10px 12px;
+  padding: 12px 16px;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
@@ -370,15 +324,30 @@ body {
   border-bottom: 1px solid var(--card-border);
 }
 .data-table td {
-  padding: 12px;
+  padding: 14px 16px;
   font-size: 13px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
+.data-table tr:last-child td { border-bottom: none; }
 
-.symbol-cell { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; }
+.symbol-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #fff;
+}
 .symbol-icon {
-  width: 26px; height: 26px; border-radius: 50%; background: #222630;
-  display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--primary); font-weight: 800;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #222630;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--primary);
+  font-weight: 800;
 }
 
 .text-right { text-align: right; }
@@ -386,27 +355,59 @@ body {
 .val-pos { color: var(--green); font-weight: 700; }
 .val-neg { color: var(--red); font-weight: 700; }
 
+.more-btn-container {
+  text-align: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--card-border);
+}
+.more-btn {
+  background: rgba(255, 106, 0, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(255, 106, 0, 0.3);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.more-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* SPK Yasal Uyarı Paneli Stilleri */
 .disclaimer-card {
-  margin-top: 20px;
+  margin-top: 28px;
   background: rgba(18, 19, 22, 0.6);
   border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 16px 20px;
 }
 .disclaimer-title {
-  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: var(--primary); margin-bottom: 6px; text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.disclaimer-text { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+.disclaimer-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
 
 .hidden { display: none !important; }
 .err-msg { color: var(--red); font-size: 12px; margin-top: 12px; }
 
-@media (max-width: 1100px) {
-  .analytics-grid { grid-template-columns: 1fr; }
-}
 @media (max-width: 900px) {
   .app-layout { flex-direction: column; }
-  .sidebar { width: 100%; border-bottom: 1px solid var(--card-border); }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--card-border); }
   .funds-grid { grid-template-columns: 1fr; }
   .main-content { padding: 16px; }
 }
@@ -424,11 +425,13 @@ body {
         </svg>
         SAFRAN<span>FON</span>
       </a>
+      
       <ul class="nav-menu">
         <li class="nav-item active"><a href="#">Anasayfa</a></li>
       </ul>
     </div>
 
+    <!-- Yenilenmiş X Kutusu -->
     <div class="sidebar-card">
       <p>Güncel Analizler İçin</p>
       <a href="https://x.com/esafrann1?s=11&t=c_dZPK9xTrLpiuTlp0X63A" target="_blank" class="x-link">
@@ -447,13 +450,10 @@ body {
         <p>Anlık verilere göre hesaplanan tahmini günlük getiriler</p>
       </div>
       <div class="header-status">
-        <div class="bist-badge">
-          <span style="color:var(--text-muted);">BIST 100:</span>
-          <span id="bistVal">—</span>
-        </div>
+        <div class="status-pill" id="status">Veriler Anlık</div>
         <div class="time-badge">
-          <span style="color:var(--text-muted);">Son Güncelleme:</span>
-          <span class="time-val" id="lastUpdateTimer">0s önce</span>
+          <span style="color:var(--text-muted);">Piyasa Saati:</span>
+          <span class="time-val" id="liveClock">00:00:00</span>
         </div>
       </div>
     </header>
@@ -462,10 +462,7 @@ body {
       <div class="fund-card active" id="tlyBox" onclick="switchFund('TLY')">
         <div class="fund-header">
           <div>
-            <div class="fund-code">
-              TLY
-              <span class="fav-star" id="fav-TLY" onclick="toggleFav(event, 'TLY')">★</span>
-            </div>
+            <div class="fund-code">TLY</div>
             <div class="fund-desc">Tera Portföy Hisse Senedi Fonu</div>
           </div>
         </div>
@@ -478,10 +475,7 @@ body {
       <div class="fund-card" id="tmvBox" onclick="switchFund('TMV')">
         <div class="fund-header">
           <div>
-            <div class="fund-code">
-              TMV
-              <span class="fav-star" id="fav-TMV" onclick="toggleFav(event, 'TMV')">★</span>
-            </div>
+            <div class="fund-code">TMV</div>
             <div class="fund-desc">Tera Portföy Algoritmik Stratejik Fon</div>
           </div>
         </div>
@@ -494,10 +488,7 @@ body {
       <div class="fund-card" id="dfiBox" onclick="switchFund('DFI')">
         <div class="fund-header">
           <div>
-            <div class="fund-code">
-              DFI
-              <span class="fav-star" id="fav-DFI" onclick="toggleFav(event, 'DFI')">★</span>
-            </div>
+            <div class="fund-code">DFI</div>
             <div class="fund-desc">Destek Portföy Hisse Senedi Fonu</div>
           </div>
         </div>
@@ -508,74 +499,57 @@ body {
       </div>
     </section>
 
-    <div class="analytics-grid">
-      <!-- Sol: Tablo Paneli -->
-      <section class="table-card">
-        <div class="table-header">
-          <div class="table-title">
-            Hisse Ağırlıkları (<span id="pTitle">TLY</span>) - <span id="count" style="color:var(--text-muted)">0 / 0</span>
-          </div>
-          <div class="btn-group">
-            <button class="edit-btn" onclick="toggleEditPanel()">⚙️ Ağırlık Güncelle</button>
-            <button class="refresh-btn" onclick="refresh()">Yenile</button>
-          </div>
+    <section class="table-card">
+      <div class="table-header">
+        <div class="table-title">
+          FONLARI ETKİLEYEN AĞIRLIKLI HİSSELER (<span id="pTitle">TLY</span>) - <span id="count" style="color:var(--text-muted)">0 / 0</span>
         </div>
-
-        <div id="quickEditPanel" class="edit-panel hidden">
-          <span style="font-size:11px; font-weight:700; color:var(--primary);">Ağırlık Değiştir:</span>
-          <select id="editStockSelect"></select>
-          <input type="number" id="newWeightInput" step="0.01" placeholder="Yeni % Ağırlık">
-          <button style="background:var(--green); border:none; padding:6px 12px; border-radius:6px; font-weight:800; cursor:pointer;" onclick="saveNewWeight()">Uygula</button>
+        <div class="btn-group">
+          <button class="edit-btn" onclick="toggleEditPanel()">⚙️ Ağırlık Güncelle</button>
+          <button class="refresh-btn" onclick="refresh()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Yenile
+          </button>
         </div>
-
-        <div class="search-bar-wrap">
-          <input type="text" id="searchInput" class="search-input" placeholder="Hisse ara (Örn: OZATD)..." oninput="render()">
-        </div>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>HİSSE</th>
-                <th>AĞIRLIK</th>
-                <th class="text-right">ÖNCEKİ KAPANIŞ</th>
-                <th class="text-right">GÜNCEL FİYAT</th>
-                <th class="text-right">DEĞİŞİM</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-        <div id="err" class="err-msg"></div>
-      </section>
-
-      <!-- Sağ: Grafik & TL Simülatör Paneli -->
-      <div class="side-panel">
-        <section class="chart-card">
-          <div class="card-title">Portföy Dağılımı (<span id="chartTitle">TLY</span>)</div>
-          <div class="chart-container">
-            <canvas id="weightChart"></canvas>
-          </div>
-        </section>
-
-        <section class="simulator-card">
-          <div class="card-title">Portföy TL Simülatörü</div>
-          <div class="sim-input-group">
-            <label>Yatırım Tutarı (TL):</label>
-            <input type="number" id="simAmount" value="10000" oninput="updateSim()">
-          </div>
-          <div class="sim-result">
-            <span style="font-size:12px; color:var(--text-muted);">Tahmini Günlük Kâr/Zarar:</span>
-            <span class="sim-val" id="simResultVal">₺0.00</span>
-          </div>
-        </section>
       </div>
-    </div>
 
+      <div id="quickEditPanel" class="edit-panel hidden">
+        <span style="font-size:12px; font-weight:700; color:var(--primary);">Hızlı Ağırlık/Lot Değiştir:</span>
+        <select id="editStockSelect"></select>
+        <input type="number" id="newWeightInput" step="0.01" placeholder="Yeni % Ağırlık (Örn: 38.50)">
+        <button class="save-btn" onclick="saveNewWeight()">Uygula & Hesapla</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>HİSSE</th>
+              <th>AĞIRLIK</th>
+              <th class="text-right">ÖNCEKİ KAPANIŞ</th>
+              <th class="text-right">GÜNCEL FİYAT</th>
+              <th class="text-right">GÜNLÜK DEĞİŞİM</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div id="moreBtnContainer" class="more-btn-container hidden">
+        <button class="more-btn" id="btnMore" onclick="toggleShowAll()">Daha Fazla Göster</button>
+      </div>
+
+      <div id="err" class="err-msg"></div>
+    </section>
+
+    <!-- SPK Yasal Uyarı Metni -->
     <footer class="disclaimer-card">
-      <div class="disclaimer-title">Yasal Uyarı / SPK Bilgilendirmesi</div>
+      <div class="disclaimer-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        Yasal Uyarı / SPK Bilgilendirmesi
+      </div>
       <p class="disclaimer-text">
-        Bu web sitesinde yer alan tüm veri, grafik, oran ve hesaplanan tahmini getiriler yalnızca genel bilgilendirme amacıyla sunulmaktadır. Burada yer alan hiçbir bilgi, yorum veya istatistiki değer <strong>YATIRIM TAVSİYESİ</strong> niteliği taşımamaktadır. Buradaki hesaplamalar açık veriler ve matematiksel simülasyonlar kullanılarak üretilmekte olup kesinlik içermez.
+        Bu web sitesinde yer alan tüm veri, grafik, oran ve hesaplanan tahmini getiriler yalnızca genel bilgilendirme amacıyla sunulmaktadır. Burada yer alan hiçbir bilgi, yorum veya istatistiki değer <strong>YATIRIM TAVSİYESİ</strong> niteliği taşımamaktadır. Sermaye Piyasası Kurulunun (SPK) Yatırım Hizmetleri ve Faaliyetleri ile Yan Hizmetlere İlişkin Esaslar Hakkında Tebliği uyarınca, burada yer alan bilgiler yatırım danışmanlığı kapsamında değerlendirilemez. Yatırım danışmanlığı hizmeti; yetkili aracı kurumlar, portföy yönetim şirketleri veya mevduat kabul etmeyen bankalar ile müşteri arasında imzalanacak yatırım danışmanlığı sözleşmesi çerçevesinde sunulmaktadır. Buradaki hesaplamalar açık veriler ve matematiksel simülasyonlar kullanılarak üretilmekte olup kesinlik içermez; yatırım kararlarınızın yalnızca bu bilgilere dayandırılarak alınması beklentilerinize uygun sonuçlar doğurmayabilir.
       </p>
     </footer>
   </main>
@@ -586,11 +560,15 @@ const fundsData = {
  "TLY": [
   ["OZATD",34.77],["DSTKF",10.90],["TEHOL",8.48],["PEKGY",7.90],["HMV",4.88],
   ["TRHOL",3.91],["TERA",3.41],["ANELE",1.97],["ALKLC",1.80],["SELEC",1.51],
-  ["BIGEN",1.35],["SVGYO",0.50],["HEDEF",0.43],["EUPWR",0.37],["MANAS",0.26]
+  ["BIGEN",1.35],["SVGYO",0.50],["HEDEF",0.43],["EUPWR",0.37],["MANAS",0.26],
+  ["SARAE",0.11],["DAPGM",0.05],["GESAN",0.04],["TMPOL",0.03],["YKBNK",0.03],
+  ["METEN",0.01],["T3B",0.01],["EFOR",0.00],["KARCL",0.00]
  ],
  "TMV": [
   ["OZATD",16.83],["TEHOL",9.12],["TRHOL",6.37],["ANELE",5.62],["SELEC",3.17],
-  ["PEKGY",2.23],["DSTKF",1.81],["ALKLC",1.69],["EUPWR",1.52],["TERA",0.99]
+  ["PEKGY",2.23],["DSTKF",1.81],["ALKLC",1.69],["EUPWR",1.52],["TERA",0.99],
+  ["GESAN",0.38],["TURSG",0.29],["YKBNK",0.22],["KORDS",0.18],["AKSEN",0.17],
+  ["HEDEF",0.13],["SVGYO",0.05],["MANAS",0.04],["TMM",0.02]
  ],
  "DFI": [
   ["IEYHO",41.16],["ABG",23.02],["ISKPL",2.90],["LIDER",0.12],["KVR",0.12],["PFS",0.03]
@@ -599,42 +577,24 @@ const fundsData = {
 
 let currentFund = "TLY";
 let priceMap = {};
-let lastFetchTime = Date.now();
-let chartInstance = null;
-let favorites = JSON.parse(localStorage.getItem('favFunds') || '[]');
+let showAll = false;
 
 const fmt = n => n == null ? "—" : Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = n => n == null ? "—" : (n >= 0 ? "%+" : "%") + Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 function switchFund(fundKey){
   currentFund = fundKey;
+  showAll = false;
   document.querySelectorAll('.fund-card').forEach(b => b.classList.remove('active'));
   document.getElementById(fundKey.toLowerCase() + 'Box').classList.add('active');
   document.getElementById('pTitle').textContent = fundKey;
-  document.getElementById('chartTitle').textContent = fundKey;
   populateStockSelect();
   render();
-  updateChart();
-  updateSim();
 }
 
-function toggleFav(e, fundKey) {
-  e.stopPropagation();
-  if (favorites.includes(fundKey)) {
-    favorites = favorites.filter(x => x !== fundKey);
-  } else {
-    favorites.push(fundKey);
-  }
-  localStorage.setItem('favFunds', JSON.stringify(favorites));
-  updateFavStars();
-}
-
-function updateFavStars() {
-  ["TLY", "TMV", "DFI"].forEach(fk => {
-    const el = document.getElementById("fav-" + fk);
-    if (favorites.includes(fk)) el.classList.add("active");
-    else el.classList.remove("active");
-  });
+function toggleShowAll(){
+  showAll = !showAll;
+  render();
 }
 
 function toggleEditPanel() {
@@ -649,7 +609,7 @@ function populateStockSelect() {
   fundsData[currentFund].forEach(item => {
     const opt = document.createElement("option");
     opt.value = item[0];
-    opt.textContent = `${item[0]} (%${item[1]})`;
+    opt.textContent = `${item[0]} (Mevcut: %${item[1]})`;
     select.appendChild(opt);
   });
 }
@@ -657,14 +617,20 @@ function populateStockSelect() {
 function saveNewWeight() {
   const stock = document.getElementById("editStockSelect").value;
   const newWeight = parseFloat(document.getElementById("newWeightInput").value);
-  if (isNaN(newWeight)) return;
 
-  const target = fundsData[currentFund].find(x => x[0] === stock);
+  if (isNaN(newWeight)) {
+    alert("Lütfen geçerli bir yüzde oranı girin.");
+    return;
+  }
+
+  const list = fundsData[currentFund];
+  const target = list.find(x => x[0] === stock);
   if (target) {
     target[1] = newWeight;
     render();
-    updateChart();
-    updateSim();
+    populateStockSelect();
+    document.getElementById("newWeightInput").value = "";
+    alert(`${currentFund} içindeki ${stock} ağırlığı %${newWeight} olarak güncellendi.`);
   }
 }
 
@@ -688,12 +654,11 @@ function calcFund(fundKey){
 function render(){
   const list = fundsData[currentFund];
   const body = document.getElementById("rows");
-  const query = document.getElementById("searchInput").value.toUpperCase().trim();
   body.innerHTML = "";
   
-  const filtered = list.filter(x => x[0].includes(query));
-
-  for(const item of filtered){
+  const visibleList = showAll ? list : list.slice(0, 10);
+  
+  for(const item of visibleList){
     const sym = item[0], weight = item[1];
     const p = priceMap[sym] || {};
     const prev = p.previousClose;
@@ -712,98 +677,88 @@ function render(){
       <td class="text-right text-muted">${fmt(prev)}</td>
       <td class="text-right" style="font-weight:700; color:#fff;">${fmt(cur)}</td>
       <td class="text-right ${d == null ? 'text-muted' : d >= 0 ? 'val-pos' : 'val-neg'}">
-        ${pct(d)}
+        ${pct(d)} ${d != null ? (d >= 0 ? '↗' : '↘') : ''}
       </td>
     `;
     body.appendChild(tr);
   }
 
+  const moreContainer = document.getElementById("moreBtnContainer");
+  const btnMore = document.getElementById("btnMore");
+
+  if(list.length > 10){
+    moreContainer.classList.remove("hidden");
+    if(showAll){
+      btnMore.textContent = "Daha Az Göster";
+    } else {
+      btnMore.textContent = `Daha Fazla Göster (${list.length - 10} Hisse Kaldı)`;
+    }
+  } else {
+    moreContainer.classList.add("hidden");
+  }
+
   ["TLY", "TMV", "DFI"].forEach(fk => {
     const res = calcFund(fk);
     const el = document.getElementById(fk.toLowerCase() + "Estimate");
+    const badge = document.getElementById(fk.toLowerCase() + "Badge");
+    const box = document.getElementById(fk.toLowerCase() + "Box");
+    
     el.textContent = res.count ? pct(res.total) : "—";
-    el.className = "fund-pct " + (res.total >= 0 ? "positive" : "negative");
+    box.classList.remove("neon-positive", "neon-negative");
+
+    if (res.count) {
+      if (res.total >= 0) {
+        el.className = "fund-pct positive";
+        badge.className = "fund-badge pos";
+        badge.textContent = "Yükselişte";
+        box.classList.add("neon-positive");
+      } else {
+        el.className = "fund-pct negative";
+        badge.className = "fund-badge neg";
+        badge.textContent = "Düşüşte";
+        box.classList.add("neon-negative");
+      }
+    }
   });
 
   const curRes = calcFund(currentFund);
   document.getElementById("count").textContent = curRes.count + " / " + curRes.length;
 }
 
-function updateChart() {
-  const list = fundsData[currentFund];
-  const topList = list.slice(0, 6);
-  const labels = topList.map(x => x[0]);
-  const data = topList.map(x => x[1]);
-
-  if (chartInstance) chartInstance.destroy();
-
-  const ctx = document.getElementById('weightChart').getContext('2d');
-  chartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: ['#ff6a00', '#00e676', '#29b6f6', '#ab47bc', '#ffa726', '#78909c'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { color: '#8e95a2', font: { size: 10 } } }
-      }
-    }
-  });
-}
-
-function updateSim() {
-  const amount = parseFloat(document.getElementById("simAmount").value) || 0;
-  const res = calcFund(currentFund);
-  const profit = amount * (res.total / 100);
-  const el = document.getElementById("simResultVal");
-  
-  el.textContent = (profit >= 0 ? "+₺" : "-₺") + Math.abs(profit).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2});
-  el.style.color = profit >= 0 ? "var(--green)" : "var(--red)";
-}
-
 async function refresh(){
+  document.getElementById("status").textContent = "Fiyatlar Güncelleniyor...";
+  document.getElementById("err").textContent = "";
   try {
     const r = await fetch("/api/prices?ts=" + Date.now(), {cache: "no-store"});
     if(!r.ok) throw new Error("HTTP " + r.status);
     const j = await r.json();
+    if(!j || !Array.isArray(j.data)) throw new Error("Geçersiz veri yanıtı");
     
     j.data.forEach(x => {
       priceMap[x.symbol] = { current: x.current, previousClose: x.previousClose };
     });
 
-    if (priceMap["XU100"]) {
-      const b = priceMap["XU100"];
-      const d = ((b.current / b.previousClose) - 1) * 100;
-      const el = document.getElementById("bistVal");
-      el.textContent = fmt(b.current) + " (" + pct(d) + ")";
-      el.style.color = d >= 0 ? "var(--green)" : "var(--red)";
-    }
-
-    lastFetchTime = Date.now();
+    document.getElementById("status").textContent = "Veriler Anlık";
+    if(j.errors && j.errors.length) document.getElementById("err").textContent = "Veri alınamayan: " + j.errors.join(", ");
     render();
-    updateSim();
   } catch(e) {
-    document.getElementById("err").textContent = "Veri sunucusuna bağlanılamadı.";
+    document.getElementById("status").textContent = "Bağlantı Hatası";
+    document.getElementById("err").textContent = "Yerel veri sunucusu çalışmıyor.";
   }
 }
 
-updateFavStars();
 render();
 refresh();
-updateChart();
 setInterval(refresh, 30000);
 
-setInterval(() => {
-  const sec = Math.floor((Date.now() - lastFetchTime) / 1000);
-  document.getElementById("lastUpdateTimer").textContent = sec + "s önce";
-}, 1000);
+(function(){
+  function tick(){
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    document.getElementById('liveClock').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
 </script>
 </body>
 </html>
