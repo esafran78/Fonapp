@@ -8,14 +8,16 @@ const PORT = process.env.PORT || 8765;
 const symbols = [
   "DSTKF","OZATD","PEKGY","TEHOL","TERA","TRHOL","ANELE","SELEC","SVGYO",
   "ALKLC","HEDEF","MANAS","DAPGM","EUPWR","EFOR","GESAN","TMPOL","BIGEN",
-  "KARCL","METEN","SARAE","YKBNK","TURSG","AKSEN","KORDS","IEYHO","ISKPL","LIDER"
+  "KARCL","METEN","SARAE","YKBNK","TURSG","AKSEN","KORDS","IEYHO","ISKPL","LIDER",
+  "XU100" // BIST 100 eklendi
 ];
 
 const fundSymbols = ["HMV","T3B","ABG","TMM","KVR","PFS"];
 
 async function getYahoo(symbol) {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.IS?range=5d&interval=1d&includePrePost=false`;
+    const yahooSymbol = symbol === "XU100" ? "^XU100" : `${symbol}.IS`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=5d&interval=1d&includePrePost=false`;
     const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 10000 });
     const meta = res.data.chart.result[0].meta;
     let current = meta.regularMarketPrice ?? meta.previousClose;
@@ -63,12 +65,10 @@ async function getOneTefasFund(symbol) {
   }
 }
 
+app.use(express.static(__dirname));
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/api/provider', (req, res) => {
-  res.json({ provider: "Yahoo Finance & TEFAS (Node.js)", mode: "cloud", realtimeReady: false });
 });
 
 app.get('/api/prices', async (req, res) => {
