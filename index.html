@@ -556,24 +556,43 @@ body {
 </div>
 
 <script>
-const fundsData = {
- "TLY": [
-  ["OZATD",34.77],["DSTKF",10.90],["TEHOL",8.48],["PEKGY",7.90],["HMV",4.88],
-  ["TRHOL",3.91],["TERA",3.41],["ANELE",1.97],["ALKLC",1.80],["SELEC",1.51],
-  ["BIGEN",1.35],["SVGYO",0.50],["HEDEF",0.43],["EUPWR",0.37],["MANAS",0.26],
-  ["SARAE",0.11],["DAPGM",0.05],["GESAN",0.04],["TMPOL",0.03],["YKBNK",0.03],
-  ["METEN",0.01],["T3B",0.01],["EFOR",0.00],["KARCL",0.00]
- ],
- "TMV": [
-  ["OZATD",16.83],["TEHOL",9.12],["TRHOL",6.37],["ANELE",5.62],["SELEC",3.17],
-  ["PEKGY",2.23],["DSTKF",1.81],["ALKLC",1.69],["EUPWR",1.52],["TERA",0.99],
-  ["GESAN",0.38],["TURSG",0.29],["YKBNK",0.22],["KORDS",0.18],["AKSEN",0.17],
-  ["HEDEF",0.13],["SVGYO",0.05],["MANAS",0.04],["TMM",0.02]
- ],
- "DFI": [
-  ["IEYHO",41.16],["ABG",23.02],["ISKPL",2.90],["LIDER",0.12],["KVR",0.12],["PFS",0.03]
- ]
-};
+const fundsData = {let fundsData = { "TLY": [], "TMV": [], "DFI": [] };
+let currentFund = "TLY";
+let priceMap = {};
+let showAll = false;
+
+// Sunucudan Canlı Çekilen Verileri HTML'e Aktaran Fonksiyon
+async function loadLiveFundWeights() {
+  const statusEl = document.getElementById("status");
+  statusEl.textContent = "Fon İçerikleri Çekiliyor...";
+
+  try {
+    const res = await fetch('/api/fund-weights');
+    const json = await res.json();
+
+    if (json.success && json.data && Object.keys(json.data).length > 0) {
+      // Çekilen veriler boş değilse aktar
+      if (json.data.TLY.length > 0 || json.data.TMV.length > 0 || json.data.DFI.length > 0) {
+        fundsData = json.data;
+        statusEl.textContent = "Veriler Canlı / Güncel";
+      } else {
+        statusEl.textContent = "Veri Bekleniyor...";
+      }
+      
+      populateStockSelect();
+      render();
+      refresh(); // BIST canlı fiyatlarını çekip getiriyi hesapla
+    }
+  } catch (e) {
+    console.error("Fon içerikleri yüklenirken hata:", e);
+    statusEl.textContent = "Bağlantı Hatası";
+  }
+}
+
+// Uygulama Başlatma
+loadLiveFundWeights();
+setInterval(refresh, 30000); // Fiyat yenileme (30 sn)
+setInterval(loadLiveFundWeights, 600000); // Fon içeriği yenileme (10 dk)};
 
 let currentFund = "TLY";
 let priceMap = {};
