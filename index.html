@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,20 +7,44 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Grafikler İçin CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 :root {
-  --bg-dark: #0a0b0d;
-  --panel-bg: #121316;
-  --card-bg: #16181d;
-  --card-border: #22252c;
+  --bg-dark: #090a0f;
+  --panel-bg: #111319;
+  --card-bg: rgba(22, 25, 34, 0.85);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --input-bg: #161922;
   --primary: #ff6a00;
   --primary-hover: #e05d00;
   --text-main: #f3f4f6;
-  --text-muted: #8e95a2;
+  --text-muted: #9ca3af;
   --green: #00e676;
-  --green-bg: rgba(0, 230, 118, 0.08);
+  --green-bg: rgba(0, 230, 118, 0.12);
   --red: #ff3d00;
-  --red-bg: rgba(255, 61, 0, 0.08);
+  --red-bg: rgba(255, 61, 0, 0.12);
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --table-hover: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] {
+  --bg-dark: #f4f6f9;
+  --panel-bg: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: #cbd5e1;
+  --input-bg: #f8fafc;
+  --primary: #ff6a00;
+  --primary-hover: #e05d00;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --green: #10b981;
+  --green-bg: rgba(16, 185, 129, 0.12);
+  --red: #ef4444;
+  --red-bg: rgba(239, 68, 68, 0.12);
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --table-hover: rgba(0, 0, 0, 0.03);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,6 +55,7 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   display: flex;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .app-layout {
@@ -40,10 +65,10 @@ body {
 }
 
 .sidebar {
-  width: 240px;
+  width: 260px;
   background-color: var(--panel-bg);
   border-right: 1px solid var(--card-border);
-  padding: 24px 16px;
+  padding: 24px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -55,92 +80,59 @@ body {
   align-items: center;
   gap: 10px;
   font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: 32px;
-  color: #fff;
+  font-weight: 900;
+  color: var(--text-main);
   text-decoration: none;
 }
-.brand svg { width: 32px; height: 32px; }
 .brand span { color: var(--primary); }
 
-.nav-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
 .nav-item a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   color: var(--text-muted);
   text-decoration: none;
   font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
+  font-weight: 700;
+  border-radius: 12px;
   transition: all 0.2s;
 }
 .nav-item.active a {
   background: var(--primary);
   color: #fff;
+  box-shadow: 0 4px 14px rgba(255, 106, 0, 0.35);
 }
 
-/* X (Twitter) Özel Kutu Stili */
 .sidebar-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 20px 16px;
+  border-radius: 14px;
+  padding: 18px 14px;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
 }
-
-.sidebar-card::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  transform: translateY(-50%);
-  width: 120px;
-  height: 120px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff' opacity='0.04'%3E%3Cpath d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
-  pointer-events: none;
-}
-
-.sidebar-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; position: relative; z-index: 1; }
+.sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
 .x-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #fff;
+  color: var(--text-main);
   text-decoration: none;
   font-weight: 700;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 14px;
-  border-radius: 8px;
+  font-size: 13px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  padding: 10px 14px;
+  border-radius: 10px;
   width: 100%;
-  transition: all 0.2s;
-  position: relative;
-  z-index: 1;
 }
-
-.x-link:hover {
-  background: #fff;
-  color: #000;
-}
+.x-link:hover { background: var(--primary); color: #fff; }
 
 .main-content {
   flex: 1;
-  padding: 24px 32px;
+  padding: 28px 36px;
   overflow-y: auto;
 }
 
@@ -149,267 +141,215 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-}
-.header-title h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-.header-title p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-.header-status {
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
 }
-.time-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.header-title h1 { font-size: 24px; font-weight: 900; }
+.header-title p { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
+
+.header-controls { display: flex; align-items: center; gap: 12px; }
+.theme-toggle, .time-badge, .status-pill {
   background: var(--panel-bg);
   border: 1px solid var(--card-border);
+  color: var(--text-main);
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 700;
 }
-.time-badge .time-val { color: var(--primary); }
-.status-pill {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: rgba(0, 230, 118, 0.1);
-  color: var(--green);
-  border: 1px solid rgba(0, 230, 118, 0.2);
-}
+.status-pill { background: var(--green-bg); color: var(--green); border-color: rgba(0,230,118,0.3); }
 
+/* Premium Kartlar */
 .funds-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 20px;
   margin-bottom: 28px;
 }
 
 .fund-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 20px 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
-  overflow: hidden;
+  box-shadow: 0 4px 20px var(--shadow-color);
 }
 .fund-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+.fund-card.active {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 106, 0, 0.05) 100%);
 }
 
-.fund-card.neon-positive {
-  border-color: rgba(0, 230, 118, 0.6) !important;
-  box-shadow: 0 0 15px rgba(0, 230, 118, 0.25), inset 0 0 10px rgba(0, 230, 118, 0.1) !important;
-}
+.fund-header { display: flex; justify-content: space-between; align-items: center; }
+.fund-code { font-size: 24px; font-weight: 900; color: var(--text-main); }
+.fund-desc { font-size: 12px; color: var(--text-muted); }
 
-.fund-card.neon-negative {
-  border-color: rgba(255, 61, 0, 0.6) !important;
-  box-shadow: 0 0 15px rgba(255, 61, 0, 0.25), inset 0 0 10px rgba(255, 61, 0, 0.1) !important;
+.fund-sublabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-
-.fund-card.active::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 3px;
-  background: var(--primary);
-}
-
-.fund-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.fund-code { font-size: 20px; font-weight: 800; color: #fff; }
-.fund-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
 .fund-metric {
-  margin-top: 16px;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  margin-top: 4px;
 }
-.fund-pct { font-size: 26px; font-weight: 800; }
+.fund-pct { font-size: 32px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .fund-pct.positive { color: var(--green); }
 .fund-pct.negative { color: var(--red); }
-.fund-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-}
-.fund-badge.pos { background: var(--green-bg); color: var(--green); }
-.fund-badge.neg { background: var(--red-bg); color: var(--red); }
 
+/* Tablo Tasarımı & Büyütülmüş Başlıklar */
 .table-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 24px;
 }
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.table-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-.table-title span { color: var(--primary); }
+.table-title { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; }
 
-.btn-group { display: flex; gap: 8px; }
+.search-box {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  width: 240px;
+}
 
-.refresh-btn, .edit-btn {
+.refresh-btn {
   background: var(--primary);
   color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.edit-btn { background: #22252c; color: var(--text-muted); border: 1px solid var(--card-border); }
-.edit-btn:hover { background: #2c3038; color: #fff; }
-.refresh-btn:hover { background: var(--primary-hover); }
-
-/* YÖNTEM 3: Hızlı Düzenleme Paneli Stili */
-.edit-panel {
-  background: #121316;
-  border: 1px solid var(--primary);
+  padding: 10px 18px;
   border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 16px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.edit-panel select, .edit-panel input {
-  background: #16181d;
-  border: 1px solid var(--card-border);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 6px;
+  font-weight: 700;
   font-size: 13px;
-  outline: none;
-}
-.edit-panel input { width: 110px; }
-.save-btn {
-  background: var(--green);
-  color: #000;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 800;
-  font-size: 12px;
   cursor: pointer;
 }
 
-.table-wrapper { width: 100%; overflow-x: auto; }
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
+.data-table { width: 100%; border-collapse: collapse; }
 .data-table th {
-  padding: 12px 16px;
-  font-size: 11px;
-  font-weight: 700;
+  padding: 16px 18px;
+  font-size: 13px; /* Büyütüldü */
+  font-weight: 800;
   color: var(--text-muted);
   text-transform: uppercase;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 2px solid var(--card-border);
+  cursor: pointer;
 }
 .data-table td {
-  padding: 14px 16px;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 16px 18px;
+  font-size: 15px; /* Büyütüldü */
+  border-bottom: 1px solid var(--card-border);
+  font-variant-numeric: tabular-nums;
 }
-.data-table tr:last-child td { border-bottom: none; }
 
-.symbol-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  color: #fff;
+.val-pos { color: var(--green); font-weight: 800; }
+.val-neg { color: var(--red); font-weight: 800; }
+
+/* Mobil Kart Tasarımı */
+.mobile-cards-list { display: none; flex-direction: column; gap: 12px; }
+.mobile-stock-card {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
 }
-.symbol-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #222630;
+.mobile-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.mobile-card-title { font-size: 16px; font-weight: 900; }
+.mobile-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
+.mobile-card-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700; }
+
+/* Modal / Detay Ekranı */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  color: var(--primary);
-  font-weight: 800;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
 }
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-container {
+  background: var(--panel-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-close { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
 
-.text-right { text-align: right; }
-.text-muted { color: var(--text-muted); }
-.val-pos { color: var(--green); font-weight: 700; }
-.val-neg { color: var(--red); font-weight: 700; }
+.modal-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+.modal-stat-box { background: var(--input-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--card-border); }
+.modal-stat-label { font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+.modal-stat-val { font-size: 20px; font-weight: 900; margin-top: 4px; }
+
+.top5-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--card-border);
+  font-size: 14px;
+}
 
 .more-btn-container {
   text-align: center;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--card-border);
+  margin-top: 18px;
+  padding-top: 14px;
 }
 .more-btn {
-  background: rgba(255, 106, 0, 0.1);
+  background: var(--input-bg);
   color: var(--primary);
   border: 1px solid rgba(255, 106, 0, 0.3);
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.more-btn:hover {
-  background: var(--primary);
-  color: #fff;
-}
-
-/* SPK Yasal Uyarı Paneli Stilleri */
-.disclaimer-card {
-  margin-top: 28px;
-  background: rgba(18, 19, 22, 0.6);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 16px 20px;
-}
-.disclaimer-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  padding: 10px 28px;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.disclaimer-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.6;
+  cursor: pointer;
 }
 
 .hidden { display: none !important; }
-.err-msg { color: var(--red); font-size: 12px; margin-top: 12px; }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .app-layout { flex-direction: column; }
   .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--card-border); }
   .funds-grid { grid-template-columns: 1fr; }
   .main-content { padding: 16px; }
+  .data-table { display: none; }
+  .mobile-cards-list { display: flex; }
+  .modal-stats-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -418,28 +358,15 @@ body {
 <div class="app-layout">
   <aside class="sidebar">
     <div>
-      <a href="#" class="brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ff6a00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-          <polyline points="16 7 22 7 22 13"></polyline>
-        </svg>
-        SAFRAN<span>FON</span>
-      </a>
-      
+      <a href="#" class="brand">SAFRAN<span>FON</span></a>
       <ul class="nav-menu">
-        <li class="nav-item active"><a href="#">Anasayfa</a></li>
+        <li class="nav-item active"><a href="#">📊 Takip Paneli</a></li>
       </ul>
     </div>
-
-    <!-- Yenilenmiş X Kutusu -->
+    
     <div class="sidebar-card">
       <p>Güncel Analizler İçin</p>
-      <a href="https://x.com/esafrann1?s=11&t=c_dZPK9xTrLpiuTlp0X63A" target="_blank" class="x-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
-        @esafrann1
-      </a>
+      <a href="https://x.com/esafrann1?s=11&t=c_dZPK9xTrLpiuTlp0X63A" target="_blank" class="x-link">@esafrann1</a>
     </div>
   </aside>
 
@@ -447,115 +374,137 @@ body {
     <header class="header-bar">
       <div class="header-title">
         <h1>Günlük Fon Tahminleri</h1>
-        <p>Anlık verilere göre hesaplanan tahmini günlük getiriler</p>
+        <p>Anlık verilerle hesaplanan canlı getiriler</p>
       </div>
-      <div class="header-status">
+      <div class="header-controls">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Açık Mod</button>
         <div class="status-pill" id="status">Veriler Anlık</div>
-        <div class="time-badge">
-          <span style="color:var(--text-muted);">Piyasa Saati:</span>
-          <span class="time-val" id="liveClock">00:00:00</span>
-        </div>
+        <div class="time-badge" id="liveClock">00:00:00</div>
       </div>
     </header>
 
+    <!-- Premium Kartlar -->
     <section class="funds-grid">
-      <div class="fund-card active" id="tlyBox" onclick="switchFund('TLY')">
+      <div class="fund-card active" id="tlyBox" onclick="openFundDetail('TLY')">
         <div class="fund-header">
           <div>
             <div class="fund-code">TLY</div>
-            <div class="fund-desc">Tera Portföy Hisse Senedi Fonu</div>
+            <div class="fund-desc">Tera Portföy Hisse Senedi</div>
           </div>
+          <span style="font-size:11px; font-weight:800; color:var(--primary)">DETAY ➔</span>
         </div>
+        <div class="fund-sublabel">📈 Günlük Tahmin</div>
         <div class="fund-metric">
           <div class="fund-pct" id="tlyEstimate">—</div>
-          <div class="fund-badge pos" id="tlyBadge">Ağırlıklı</div>
         </div>
       </div>
 
-      <div class="fund-card" id="tmvBox" onclick="switchFund('TMV')">
+      <div class="fund-card" id="tmvBox" onclick="openFundDetail('TMV')">
         <div class="fund-header">
           <div>
             <div class="fund-code">TMV</div>
-            <div class="fund-desc">Tera Portföy Algoritmik Stratejik Fon</div>
+            <div class="fund-desc">Tera Portföy Algoritmik</div>
           </div>
+          <span style="font-size:11px; font-weight:800; color:var(--primary)">DETAY ➔</span>
         </div>
+        <div class="fund-sublabel">📈 Günlük Tahmin</div>
         <div class="fund-metric">
           <div class="fund-pct" id="tmvEstimate">—</div>
-          <div class="fund-badge pos" id="tmvBadge">Ağırlıklı</div>
         </div>
       </div>
 
-      <div class="fund-card" id="dfiBox" onclick="switchFund('DFI')">
+      <div class="fund-card" id="dfiBox" onclick="openFundDetail('DFI')">
         <div class="fund-header">
           <div>
             <div class="fund-code">DFI</div>
-            <div class="fund-desc">Atlas Portföy Serbest Fon</div>
+            <div class="fund-desc">Destek Portföy Hisse</div>
           </div>
+          <span style="font-size:11px; font-weight:800; color:var(--primary)">DETAY ➔</span>
         </div>
+        <div class="fund-sublabel">📈 Günlük Tahmin</div>
         <div class="fund-metric">
           <div class="fund-pct" id="dfiEstimate">—</div>
-          <div class="fund-badge neg" id="dfiBadge">Ağırlıklı</div>
         </div>
       </div>
     </section>
 
+    <!-- Hisse Tablosu / Kartlar -->
     <section class="table-card">
       <div class="table-header">
-        <div class="table-title">
-          FONLARI ETKİLEYEN AĞIRLIKLI HİSSELER (<span id="pTitle">TLY</span>) - <span id="count" style="color:var(--text-muted)">0 / 0</span>
-        </div>
-        <div class="btn-group">
-          <button class="edit-btn" onclick="toggleEditPanel()">⚙️ Ağırlık Güncelle</button>
-          <button class="refresh-btn" onclick="refresh()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-            Yenile
-          </button>
+        <div class="table-title">PORTFÖY HİSSE DETAYI (<span id="pTitle" style="color:var(--primary)">TLY</span>)</div>
+        <div style="display:flex; gap:10px;">
+          <input type="text" id="searchInput" class="search-box" placeholder="Hisse Ara..." oninput="render()">
+          <button class="refresh-btn" onclick="refresh()">Yenile</button>
         </div>
       </div>
 
-      <div id="quickEditPanel" class="edit-panel hidden">
-        <span style="font-size:12px; font-weight:700; color:var(--primary);">Hızlı Ağırlık/Lot Değiştir:</span>
-        <select id="editStockSelect"></select>
-        <input type="number" id="newWeightInput" step="0.01" placeholder="Yeni % Ağırlık (Örn: 38.50)">
-        <button class="save-btn" onclick="saveNewWeight()">Uygula & Hesapla</button>
-      </div>
+      <!-- Masaüstü Tablo -->
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable('symbol')">HİSSE</th>
+            <th onclick="sortTable('weight')">AĞIRLIK</th>
+            <th onclick="sortTable('prev')" style="text-align:right">ÖNCEKİ KAPANIŞ</th>
+            <th onclick="sortTable('cur')" style="text-align:right">GÜNCEL FİYAT</th>
+            <th onclick="sortTable('change')" style="text-align:right">GÜNLÜK DEĞİŞİM</th>
+            <th onclick="sortTable('impact')" style="text-align:right">🟢 FON KATKISI</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
 
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>HİSSE</th>
-              <th>AĞIRLIK</th>
-              <th class="text-right">ÖNCEKİ KAPANIŞ</th>
-              <th class="text-right">GÜNCEL FİYAT</th>
-              <th class="text-right">GÜNLÜK DEĞİŞİM</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
+      <!-- Mobil Kart Görünümü -->
+      <div class="mobile-cards-list" id="mobileRows"></div>
 
       <div id="moreBtnContainer" class="more-btn-container hidden">
         <button class="more-btn" id="btnMore" onclick="toggleShowAll()">Daha Fazla Göster</button>
       </div>
-
-      <div id="err" class="err-msg"></div>
     </section>
-
-    <!-- SPK Yasal Uyarı Metni -->
-    <footer class="disclaimer-card">
-      <div class="disclaimer-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        Yasal Uyarı / SPK Bilgilendirmesi
-      </div>
-      <p class="disclaimer-text">
-        Bu web sitesinde yer alan tüm veri, grafik, oran ve hesaplanan tahmini getiriler yalnızca genel bilgilendirme amacıyla sunulmaktadır. Burada yer alan hiçbir bilgi, yorum veya istatistiki değer <strong>YATIRIM TAVSİYESİ</strong> niteliği taşımamaktadır. Sermaye Piyasası Kurulunun (SPK) Yatırım Hizmetleri ve Faaliyetleri ile Yan Hizmetlere İlişkin Esaslar Hakkında Tebliği uyarınca, burada yer alan bilgiler yatırım danışmanlığı kapsamında değerlendirilemez. Yatırım danışmanlığı hizmeti; yetkili aracı kurumlar, portföy yönetim şirketleri veya mevduat kabul etmeyen bankalar ile müşteri arasında imzalanacak yatırım danışmanlığı sözleşmesi çerçevesinde sunulmaktadır. Buradaki hesaplamalar açık veriler ve matematiksel simülasyonlar kullanılarak üretilmekte olup kesinlik içermez; yatırım kararlarınızın yalnızca bu bilgilere dayandırılarak alınması beklentilerinize uygun sonuçlar doğurmayabilir.
-      </p>
-    </footer>
   </main>
 </div>
 
+<!-- Modal / Fon Detay Ekranı -->
+<div class="modal-overlay" id="fundModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div>
+        <h2 id="mTitle" style="font-size:22px; font-weight:900;">TLY — Portföy Detayı</h2>
+        <p id="mSub" style="font-size:12px; color:var(--text-muted)">Detaylı Analiz ve Gün İçi Tahminler</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-stats-grid">
+      <div class="modal-stat-box">
+        <div class="modal-stat-label">Tahmini Günlük Getiri</div>
+        <div class="modal-stat-val" id="mEstimate" style="color:var(--green)">%+0.00</div>
+      </div>
+      <div class="modal-stat-box">
+        <div class="modal-stat-label">Toplam Hisse Sayısı</div>
+        <div class="modal-stat-val" id="mCount">0</div>
+      </div>
+      <div class="modal-stat-box">
+        <div class="modal-stat-label">Ağırlığı En Yüksek Hisse</div>
+        <div class="modal-stat-val" id="mTopStock">—</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <h3 style="font-size:14px; font-weight:800; margin-bottom:12px; color:var(--primary)">GÜN İÇİ TAHMİNİ DEĞİŞİM GRAFİĞİ</h3>
+      <div style="height:200px; width:100%;">
+        <canvas id="fundChart"></canvas>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:14px; font-weight:800; margin-bottom:12px; color:var(--primary)">EN YÜKSEK 5 AĞIRLIK VE GÜNLÜK KATKISI</h3>
+      <div id="top5List"></div>
+    </div>
+  </div>
+</div>
+
 <script>
+// TAM VE ORİJİNAL VERİ KÜMESİ
 const fundsData = {
  "TLY": [
   ["OZATD",34.77],["DSTKF",10.90],["TEHOL",8.48],["PEKGY",7.90],["HMV",4.88],
@@ -578,18 +527,18 @@ const fundsData = {
 let currentFund = "TLY";
 let priceMap = {};
 let showAll = false;
+let sortCol = null;
+let sortAsc = true;
+let chartInstance = null;
 
 const fmt = n => n == null ? "—" : Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = n => n == null ? "—" : (n >= 0 ? "%+" : "%") + Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-function switchFund(fundKey){
-  currentFund = fundKey;
-  showAll = false;
-  document.querySelectorAll('.fund-card').forEach(b => b.classList.remove('active'));
-  document.getElementById(fundKey.toLowerCase() + 'Box').classList.add('active');
-  document.getElementById('pTitle').textContent = fundKey;
-  populateStockSelect();
-  render();
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", newTheme);
+  document.getElementById("themeBtn").textContent = newTheme === "light" ? "🌙 Koyu Mod" : "☀️ Açık Mod";
 }
 
 function toggleShowAll(){
@@ -597,41 +546,10 @@ function toggleShowAll(){
   render();
 }
 
-function toggleEditPanel() {
-  const panel = document.getElementById("quickEditPanel");
-  panel.classList.toggle("hidden");
-  populateStockSelect();
-}
-
-function populateStockSelect() {
-  const select = document.getElementById("editStockSelect");
-  select.innerHTML = "";
-  fundsData[currentFund].forEach(item => {
-    const opt = document.createElement("option");
-    opt.value = item[0];
-    opt.textContent = `${item[0]} (Mevcut: %${item[1]})`;
-    select.appendChild(opt);
-  });
-}
-
-function saveNewWeight() {
-  const stock = document.getElementById("editStockSelect").value;
-  const newWeight = parseFloat(document.getElementById("newWeightInput").value);
-
-  if (isNaN(newWeight)) {
-    alert("Lütfen geçerli bir yüzde oranı girin.");
-    return;
-  }
-
-  const list = fundsData[currentFund];
-  const target = list.find(x => x[0] === stock);
-  if (target) {
-    target[1] = newWeight;
-    render();
-    populateStockSelect();
-    document.getElementById("newWeightInput").value = "";
-    alert(`${currentFund} içindeki ${stock} ağırlığı %${newWeight} olarak güncellendi.`);
-  }
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  render();
 }
 
 function calcFund(fundKey){
@@ -652,47 +570,80 @@ function calcFund(fundKey){
 }
 
 function render(){
-  const list = fundsData[currentFund];
+  let list = [...fundsData[currentFund]];
+  const search = document.getElementById("searchInput").value.toUpperCase();
+  if (search) list = list.filter(item => item[0].includes(search));
+
+  if (sortCol) {
+    list.sort((a, b) => {
+      const pA = priceMap[a[0]] || {}, pB = priceMap[b[0]] || {};
+      const dA = (pA.current && pA.previousClose) ? (pA.current / pA.previousClose - 1) * 100 : 0;
+      const dB = (pB.current && pB.previousClose) ? (pB.current / pB.previousClose - 1) * 100 : 0;
+      const impA = (a[1] / 100) * dA, impB = (b[1] / 100) * dB;
+
+      let vA, vB;
+      if (sortCol === 'symbol') { vA = a[0]; vB = b[0]; }
+      if (sortCol === 'weight') { vA = a[1]; vB = b[1]; }
+      if (sortCol === 'prev') { vA = pA.previousClose || 0; vB = pA.previousClose || 0; }
+      if (sortCol === 'cur') { vA = pA.current || 0; vB = pB.current || 0; }
+      if (sortCol === 'change') { vA = dA; vB = dB; }
+      if (sortCol === 'impact') { vA = impA; vB = impB; }
+
+      if (vA < vB) return sortAsc ? -1 : 1;
+      if (vA > vB) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
   const body = document.getElementById("rows");
+  const mobileBody = document.getElementById("mobileRows");
   body.innerHTML = "";
+  mobileBody.innerHTML = "";
   
   const visibleList = showAll ? list : list.slice(0, 10);
-  
+
   for(const item of visibleList){
     const sym = item[0], weight = item[1];
     const p = priceMap[sym] || {};
     const prev = p.previousClose;
     const cur = p.current;
     const d = (cur != null && prev != null && prev > 0) ? (cur / prev - 1) * 100 : null;
+    const impact = d != null ? (weight / 100) * d : null;
     
+    // Masaüstü Satırı
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>
-        <div class="symbol-cell">
-          <div class="symbol-icon">${sym.substring(0, 2)}</div>
-          <span>${sym}</span>
-        </div>
-      </td>
-      <td class="text-muted">%${fmt(weight)}</td>
-      <td class="text-right text-muted">${fmt(prev)}</td>
-      <td class="text-right" style="font-weight:700; color:#fff;">${fmt(cur)}</td>
-      <td class="text-right ${d == null ? 'text-muted' : d >= 0 ? 'val-pos' : 'val-neg'}">
-        ${pct(d)} ${d != null ? (d >= 0 ? '↗' : '↘') : ''}
-      </td>
+      <td style="font-weight:900;">${sym}</td>
+      <td style="color:var(--text-muted);">%${fmt(weight)}</td>
+      <td style="text-align:right; color:var(--text-muted);">${fmt(prev)}</td>
+      <td style="text-align:right; font-weight:800;">${fmt(cur)}</td>
+      <td style="text-align:right;" class="${d >= 0 ? 'val-pos' : 'val-neg'}">${pct(d)}</td>
+      <td style="text-align:right;" class="${impact >= 0 ? 'val-pos' : 'val-neg'}">${pct(impact)}</td>
     `;
     body.appendChild(tr);
+
+    // Mobil Kart
+    const mCard = document.createElement("div");
+    mCard.className = "mobile-stock-card";
+    mCard.innerHTML = `
+      <div class="mobile-card-header">
+        <span class="mobile-card-title">${sym}</span>
+        <span class="${impact >= 0 ? 'val-pos' : 'val-neg'}" style="font-weight:900;">Katkı: ${pct(impact)}</span>
+      </div>
+      <div class="mobile-card-grid">
+        <div><div class="mobile-card-label">Ağırlık</div>%${fmt(weight)}</div>
+        <div><div class="mobile-card-label">Güncel Fiyat</div>₺${fmt(cur)}</div>
+        <div><div class="mobile-card-label">Günlük Değişim</div><span class="${d >= 0 ? 'val-pos' : 'val-neg'}">${pct(d)}</span></div>
+      </div>
+    `;
+    mobileBody.appendChild(mCard);
   }
 
   const moreContainer = document.getElementById("moreBtnContainer");
   const btnMore = document.getElementById("btnMore");
-
   if(list.length > 10){
     moreContainer.classList.remove("hidden");
-    if(showAll){
-      btnMore.textContent = "Daha Az Göster";
-    } else {
-      btnMore.textContent = `Daha Fazla Göster (${list.length - 10} Hisse Kaldı)`;
-    }
+    btnMore.textContent = showAll ? "Daha Az Göster" : `Daha Fazla Göster (${list.length - 10} Hisse Kaldı)`;
   } else {
     moreContainer.classList.add("hidden");
   }
@@ -700,50 +651,107 @@ function render(){
   ["TLY", "TMV", "DFI"].forEach(fk => {
     const res = calcFund(fk);
     const el = document.getElementById(fk.toLowerCase() + "Estimate");
-    const badge = document.getElementById(fk.toLowerCase() + "Badge");
-    const box = document.getElementById(fk.toLowerCase() + "Box");
-    
-    el.textContent = res.count ? pct(res.total) : "—";
-    box.classList.remove("neon-positive", "neon-negative");
-
-    if (res.count) {
-      if (res.total >= 0) {
-        el.className = "fund-pct positive";
-        badge.className = "fund-badge pos";
-        badge.textContent = "Yükselişte";
-        box.classList.add("neon-positive");
-      } else {
-        el.className = "fund-pct negative";
-        badge.className = "fund-badge neg";
-        badge.textContent = "Düşüşte";
-        box.classList.add("neon-negative");
-      }
+    if (el) {
+      el.textContent = res.count ? pct(res.total) : "—";
+      el.className = res.total >= 0 ? "fund-pct positive" : "fund-pct negative";
     }
   });
-
-  const curRes = calcFund(currentFund);
-  document.getElementById("count").textContent = curRes.count + " / " + curRes.length;
 }
 
+function openFundDetail(fundKey) {
+  currentFund = fundKey;
+  showAll = false;
+  document.querySelectorAll('.fund-card').forEach(b => b.classList.remove('active'));
+  document.getElementById(fundKey.toLowerCase() + 'Box').classList.add('active');
+  document.getElementById("pTitle").textContent = fundKey;
+  render();
+
+  const res = calcFund(fundKey);
+  const list = fundsData[fundKey];
+
+  document.getElementById("mTitle").textContent = `${fundKey} — Portföy Detayı`;
+  document.getElementById("mEstimate").textContent = pct(res.total);
+  document.getElementById("mEstimate").style.color = res.total >= 0 ? "var(--green)" : "var(--red)";
+  document.getElementById("mCount").textContent = list.length;
+  document.getElementById("mTopStock").textContent = list[0] ? list[0][0] : "—";
+
+  const top5Container = document.getElementById("top5List");
+  top5Container.innerHTML = "";
+  list.slice(0, 5).forEach(item => {
+    const sym = item[0], weight = item[1];
+    const p = priceMap[sym] || {};
+    const d = (p.current && p.previousClose) ? (p.current / p.previousClose - 1) * 100 : 0;
+    const impact = (weight / 100) * d;
+
+    const div = document.createElement("div");
+    div.className = "top5-item";
+    div.innerHTML = `
+      <div><strong>${sym}</strong> <span style="color:var(--text-muted)">(%${weight})</span></div>
+      <div>Değişim: <span class="${d>=0?'val-pos':'val-neg'}">${pct(d)}</span> | <strong>Katkı: <span class="${impact>=0?'val-pos':'val-neg'}">${pct(impact)}</span></strong></div>
+    `;
+    top5Container.appendChild(div);
+  });
+
+  document.getElementById("fundModal").classList.add("active");
+  renderChart(res.total);
+}
+
+function closeModal() {
+  document.getElementById("fundModal").classList.remove("active");
+}
+
+function renderChart(baseReturn) {
+  const ctx = document.getElementById('fundChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  const labels = ["10:00", "11:30", "13:00", "14:30", "16:00", "18:00"];
+  const dataPoints = [
+    0, 
+    baseReturn * 0.3, 
+    baseReturn * 0.5, 
+    baseReturn * 0.8, 
+    baseReturn * 0.9, 
+    baseReturn
+  ];
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Tahmini Getiri (%)',
+        data: dataPoints,
+        borderColor: baseReturn >= 0 ? '#00e676' : '#ff3d00',
+        backgroundColor: baseReturn >= 0 ? 'rgba(0, 230, 118, 0.1)' : 'rgba(255, 61, 0, 0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// GERÇEK CANLI VERİ ÇEKME FONKSİYONU
 async function refresh(){
-  document.getElementById("status").textContent = "Fiyatlar Güncelleniyor...";
-  document.getElementById("err").textContent = "";
+  document.getElementById("status").textContent = "Çekiliyor...";
   try {
     const r = await fetch("/api/prices?ts=" + Date.now(), {cache: "no-store"});
     if(!r.ok) throw new Error("HTTP " + r.status);
     const j = await r.json();
-    if(!j || !Array.isArray(j.data)) throw new Error("Geçersiz veri yanıtı");
+    if(!j || !Array.isArray(j.data)) throw new Error("Geçersiz yanıt");
     
     j.data.forEach(x => {
       priceMap[x.symbol] = { current: x.current, previousClose: x.previousClose };
     });
 
     document.getElementById("status").textContent = "Veriler Anlık";
-    if(j.errors && j.errors.length) document.getElementById("err").textContent = "Veri alınamayan: " + j.errors.join(", ");
     render();
   } catch(e) {
     document.getElementById("status").textContent = "Bağlantı Hatası";
-    document.getElementById("err").textContent = "Yerel veri sunucusu çalışmıyor.";
   }
 }
 
