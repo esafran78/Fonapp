@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAFRANFON - Fonları Gör, Geleceği Öngör</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0a0b0d;
+  --panel-bg: #121316;
+  --card-bg: #16181d;
+  --card-border: #22252c;
+  --primary: #ff6a00;
+  --primary-hover: #e05d00;
+  --text-main: #f3f4f6;
+  --text-muted: #8e95a2;
+  --green: #00e676;
+  --green-bg: rgba(0, 230, 118, 0.08);
+  --red: #ff3d00;
+  --red-bg: rgba(255, 61, 0, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+}
+
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: var(--panel-bg);
+  border-right: 1px solid var(--card-border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 32px;
+  color: #fff;
+  text-decoration: none;
+}
+.brand svg { width: 32px; height: 32px; }
+.brand span { color: var(--primary); }
+
+.nav-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.nav-item.active a {
+  background: var(--primary);
+  color: #fff;
+}
+
+.sidebar-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.sidebar-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+.x-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.header-title h1 { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.header-title p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.time-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--card-border);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.time-badge .time-val { color: var(--primary); }
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0, 230, 118, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+}
+
+.funds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.fund-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.fund-card:hover {
+  transform: translateY(-2px);
+}
+
+.fund-card.neon-positive {
+  border-color: rgba(0, 230, 118, 0.6) !important;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.25), inset 0 0 10px rgba(0, 230, 118, 0.1) !important;
+}
+
+.fund-card.neon-negative {
+  border-color: rgba(255, 61, 0, 0.6) !important;
+  box-shadow: 0 0 15px rgba(255, 61, 0, 0.25), inset 0 0 10px rgba(255, 61, 0, 0.1) !important;
+}
+
+.fund-card.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: var(--primary);
+}
+
+.fund-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.fund-code { font-size: 20px; font-weight: 800; color: #fff; }
+.fund-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.fund-metric {
+  margin-top: 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.fund-pct { font-size: 26px; font-weight: 800; }
+.fund-pct.positive { color: var(--green); }
+.fund-pct.negative { color: var(--red); }
+.fund-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+.fund-badge.pos { background: var(--green-bg); color: var(--green); }
+.fund-badge.neg { background: var(--red-bg); color: var(--red); }
+
+.table-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.table-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+.table-title span { color: var(--primary); }
+
+.btn-group { display: flex; gap: 8px; }
+
+.refresh-btn, .edit-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.edit-btn { background: #22252c; color: var(--text-muted); border: 1px solid var(--card-border); }
+.edit-btn:hover { background: #2c3038; color: #fff; }
+.refresh-btn:hover { background: var(--primary-hover); }
+
+/* YÖNTEM 3: Hızlı Düzenleme Paneli Stili */
+.edit-panel {
+  background: #121316;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.edit-panel select, .edit-panel input {
+  background: #16181d;
+  border: 1px solid var(--card-border);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+}
+.edit-panel input { width: 110px; }
+.save-btn {
+  background: var(--green);
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.table-wrapper { width: 100%; overflow-x: auto; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.data-table th {
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--card-border);
+}
+.data-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.data-table tr:last-child td { border-bottom: none; }
+
+.symbol-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+.symbol-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #222630;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.text-right { text-align: right; }
+.text-muted { color: var(--text-muted); }
+.val-pos { color: var(--green); font-weight: 700; }
+.val-neg { color: var(--red); font-weight: 700; }
+
+.more-btn-container {
+  text-align: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--card-border);
+}
+.more-btn {
+  background: rgba(255, 106, 0, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(255, 106, 0, 0.3);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.more-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.hidden { display: none !important; }
+.err-msg { color: var(--red); font-size: 12px; margin-top: 12px; }
+
+@media (max-width: 900px) {
+  .app-layout { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--card-border); }
+  .funds-grid { grid-template-columns: 1fr; }
+  .main-content { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div>
+      <a href="#" class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ff6a00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+          <polyline points="16 7 22 7 22 13"></polyline>
+        </svg>
+        SAFRAN<span>FON</span>
+      </a>
+      
+      <ul class="nav-menu">
+        <li class="nav-item active"><a href="#">Anasayfa</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-card">
+      <p>X'te Takip Edin</p>
+      <a href="https://x.com/esafrann1?s=11&t=c_dZPK9xTrLpiuTlp0X63A" target="_blank" class="x-link">
+        <span>𝕏</span> @esafrann1
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="header-bar">
+      <div class="header-title">
+        <h1>Günlük Fon Tahminleri</h1>
+        <p>Anlık verilere göre hesaplanan tahmini günlük getiriler</p>
+      </div>
+      <div class="header-status">
+        <div class="status-pill" id="status">Veriler Anlık</div>
+        <div class="time-badge">
+          <span style="color:var(--text-muted);">Piyasa Saati:</span>
+          <span class="time-val" id="liveClock">00:00:00</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="funds-grid">
+      <div class="fund-card active" id="tlyBox" onclick="switchFund('TLY')">
+        <div class="fund-header">
+          <div>
+            <div class="fund-code">TLY</div>
+            <div class="fund-desc">Tera Portföy Hisse Senedi Fonu</div>
+          </div>
+        </div>
+        <div class="fund-metric">
+          <div class="fund-pct" id="tlyEstimate">—</div>
+          <div class="fund-badge pos" id="tlyBadge">Ağırlıklı</div>
+        </div>
+      </div>
+
+      <div class="fund-card" id="tmvBox" onclick="switchFund('TMV')">
+        <div class="fund-header">
+          <div>
+            <div class="fund-code">TMV</div>
+            <div class="fund-desc">Tera Portföy Algoritmik Stratejik Fon</div>
+          </div>
+        </div>
+        <div class="fund-metric">
+          <div class="fund-pct" id="tmvEstimate">—</div>
+          <div class="fund-badge pos" id="tmvBadge">Ağırlıklı</div>
+        </div>
+      </div>
+
+      <div class="fund-card" id="dfiBox" onclick="switchFund('DFI')">
+        <div class="fund-header">
+          <div>
+            <div class="fund-code">DFI</div>
+            <div class="fund-desc">Destek Portföy Hisse Senedi Fonu</div>
+          </div>
+        </div>
+        <div class="fund-metric">
+          <div class="fund-pct" id="dfiEstimate">—</div>
+          <div class="fund-badge neg" id="dfiBadge">Ağırlıklı</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <div class="table-header">
+        <div class="table-title">
+          FONLARI ETKİLEYEN AĞIRLIKLI HİSSELER (<span id="pTitle">TLY</span>) - <span id="count" style="color:var(--text-muted)">0 / 0</span>
+        </div>
+        <div class="btn-group">
+          <button class="edit-btn" onclick="toggleEditPanel()">⚙️ Ağırlık Güncelle</button>
+          <button class="refresh-btn" onclick="refresh()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Yenile
+          </button>
+        </div>
+      </div>
+
+      <!-- YÖNTEM 3: Manuel Ağırlık Güncelleme Paneli -->
+      <div id="quickEditPanel" class="edit-panel hidden">
+        <span style="font-size:12px; font-weight:700; color:var(--primary);">Hızlı Ağırlık/Lot Değiştir:</span>
+        <select id="editStockSelect"></select>
+        <input type="number" id="newWeightInput" step="0.01" placeholder="Yeni % Ağırlık (Örn: 38.50)">
+        <button class="save-btn" onclick="saveNewWeight()">Uygula & Hesapla</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>HİSSE</th>
+              <th>AĞIRLIK</th>
+              <th class="text-right">ÖNCEKİ KAPANIŞ</th>
+              <th class="text-right">GÜNCEL FİYAT</th>
+              <th class="text-right">GÜNLÜK DEĞİŞİM</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div id="moreBtnContainer" class="more-btn-container hidden">
+        <button class="more-btn" id="btnMore" onclick="toggleShowAll()">Daha Fazla Göster</button>
+      </div>
+
+      <div id="err" class="err-msg"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const fundsData = {
+ "TLY": [
+  ["OZATD",34.77],["DSTKF",10.90],["TEHOL",8.48],["PEKGY",7.90],["HMV",4.88],
+  ["TRHOL",3.91],["TERA",3.41],["ANELE",1.97],["ALKLC",1.80],["SELEC",1.51],
+  ["BIGEN",1.35],["SVGYO",0.50],["HEDEF",0.43],["EUPWR",0.37],["MANAS",0.26],
+  ["SARAE",0.11],["DAPGM",0.05],["GESAN",0.04],["TMPOL",0.03],["YKBNK",0.03],
+  ["METEN",0.01],["T3B",0.01],["EFOR",0.00],["KARCL",0.00]
+ ],
+ "TMV": [
+  ["OZATD",16.83],["TEHOL",9.12],["TRHOL",6.37],["ANELE",5.62],["SELEC",3.17],
+  ["PEKGY",2.23],["DSTKF",1.81],["ALKLC",1.69],["EUPWR",1.52],["TERA",0.99],
+  ["GESAN",0.38],["TURSG",0.29],["YKBNK",0.22],["KORDS",0.18],["AKSEN",0.17],
+  ["HEDEF",0.13],["SVGYO",0.05],["MANAS",0.04],["TMM",0.02]
+ ],
+ "DFI": [
+  ["IEYHO",41.16],["ABG",23.02],["ISKPL",2.90],["LIDER",0.12],["KVR",0.12],["PFS",0.03]
+ ]
+};
+
+let currentFund = "TLY";
+let priceMap = {};
+let showAll = false;
+
+const fmt = n => n == null ? "—" : Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const pct = n => n == null ? "—" : (n >= 0 ? "%+" : "%") + Number(n).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function switchFund(fundKey){
+  currentFund = fundKey;
+  showAll = false;
+  document.querySelectorAll('.fund-card').forEach(b => b.classList.remove('active'));
+  document.getElementById(fundKey.toLowerCase() + 'Box').classList.add('active');
+  document.getElementById('pTitle').textContent = fundKey;
+  populateStockSelect();
+  render();
+}
+
+function toggleShowAll(){
+  showAll = !showAll;
+  render();
+}
+
+// YÖNTEM 3 FONKSİYONLARI: Hızlı Düzenleme Paneli Mantığı
+function toggleEditPanel() {
+  const panel = document.getElementById("quickEditPanel");
+  panel.classList.toggle("hidden");
+  populateStockSelect();
+}
+
+function populateStockSelect() {
+  const select = document.getElementById("editStockSelect");
+  select.innerHTML = "";
+  fundsData[currentFund].forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item[0];
+    opt.textContent = `${item[0]} (Mevcut: %${item[1]})`;
+    select.appendChild(opt);
+  });
+}
+
+function saveNewWeight() {
+  const stock = document.getElementById("editStockSelect").value;
+  const newWeight = parseFloat(document.getElementById("newWeightInput").value);
+
+  if (isNaN(newWeight)) {
+    alert("Lütfen geçerli bir yüzde oranı girin.");
+    return;
+  }
+
+  const list = fundsData[currentFund];
+  const target = list.find(x => x[0] === stock);
+  if (target) {
+    target[1] = newWeight;
+    render();
+    populateStockSelect();
+    document.getElementById("newWeightInput").value = "";
+    alert(`${currentFund} içindeki ${stock} ağırlığı %${newWeight} olarak güncellendi.`);
+  }
+}
+
+function calcFund(fundKey){
+  const list = fundsData[fundKey];
+  let count = 0, total = 0;
+  for(const item of list){
+    const sym = item[0], weight = item[1];
+    const p = priceMap[sym];
+    if(p && p.current != null){
+      count++;
+      const prev = p.previousClose;
+      const cur = p.current;
+      const d = (prev != null && prev > 0) ? (cur / prev - 1) * 100 : null;
+      if(d != null) total += (weight / 100) * d;
+    }
+  }
+  return { count, total, length: list.length };
+}
+
+function render(){
+  const list = fundsData[currentFund];
+  const body = document.getElementById("rows");
+  body.innerHTML = "";
+  
+  const visibleList = showAll ? list : list.slice(0, 10);
+  
+  for(const item of visibleList){
+    const sym = item[0], weight = item[1];
+    const p = priceMap[sym] || {};
+    const prev = p.previousClose;
+    const cur = p.current;
+    const d = (cur != null && prev != null && prev > 0) ? (cur / prev - 1) * 100 : null;
+    
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>
+        <div class="symbol-cell">
+          <div class="symbol-icon">${sym.substring(0, 2)}</div>
+          <span>${sym}</span>
+        </div>
+      </td>
+      <td class="text-muted">%${fmt(weight)}</td>
+      <td class="text-right text-muted">${fmt(prev)}</td>
+      <td class="text-right" style="font-weight:700; color:#fff;">${fmt(cur)}</td>
+      <td class="text-right ${d == null ? 'text-muted' : d >= 0 ? 'val-pos' : 'val-neg'}">
+        ${pct(d)} ${d != null ? (d >= 0 ? '↗' : '↘') : ''}
+      </td>
+    `;
+    body.appendChild(tr);
+  }
+
+  const moreContainer = document.getElementById("moreBtnContainer");
+  const btnMore = document.getElementById("btnMore");
+
+  if(list.length > 10){
+    moreContainer.classList.remove("hidden");
+    if(showAll){
+      btnMore.textContent = "Daha Az Göster";
+    } else {
+      btnMore.textContent = `Daha Fazla Göster (${list.length - 10} Hisse Kaldı)`;
+    }
+  } else {
+    moreContainer.classList.add("hidden");
+  }
+
+  ["TLY", "TMV", "DFI"].forEach(fk => {
+    const res = calcFund(fk);
+    const el = document.getElementById(fk.toLowerCase() + "Estimate");
+    const badge = document.getElementById(fk.toLowerCase() + "Badge");
+    const box = document.getElementById(fk.toLowerCase() + "Box");
+    
+    el.textContent = res.count ? pct(res.total) : "—";
+    box.classList.remove("neon-positive", "neon-negative");
+
+    if (res.count) {
+      if (res.total >= 0) {
+        el.className = "fund-pct positive";
+        badge.className = "fund-badge pos";
+        badge.textContent = "Yükselişte";
+        box.classList.add("neon-positive");
+      } else {
+        el.className = "fund-pct negative";
+        badge.className = "fund-badge neg";
+        badge.textContent = "Düşüşte";
+        box.classList.add("neon-negative");
+      }
+    }
+  });
+
+  const curRes = calcFund(currentFund);
+  document.getElementById("count").textContent = curRes.count + " / " + curRes.length;
+}
+
+async function refresh(){
+  document.getElementById("status").textContent = "Fiyatlar Güncelleniyor...";
+  document.getElementById("err").textContent = "";
+  try {
+    const r = await fetch("/api/prices?ts=" + Date.now(), {cache: "no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if(!j || !Array.isArray(j.data)) throw new Error("Geçersiz veri yanıtı");
+    
+    j.data.forEach(x => {
+      priceMap[x.symbol] = { current: x.current, previousClose: x.previousClose };
+    });
+
+    document.getElementById("status").textContent = "Veriler Anlık";
+    if(j.errors && j.errors.length) document.getElementById("err").textContent = "Veri alınamayan: " + j.errors.join(", ");
+    render();
+  } catch(e) {
+    document.getElementById("status").textContent = "Bağlantı Hatası";
+    document.getElementById("err").textContent = "Yerel veri sunucusu çalışmıyor. BASLAT.bat dosyasını tekrar çalıştırın.";
+  }
+}
+
+render();
+refresh();
+setInterval(refresh, 30000);
+
+(function(){
+  function tick(){
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    document.getElementById('liveClock').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
