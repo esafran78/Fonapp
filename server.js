@@ -1,102 +1,83 @@
 const express = require('express');
-const axios = require('axios');
+const puppeteer = require('puppeteer');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 8765;
+const PORT = process.env.PORT || 3000;
 
-const symbols = [
-  "DSTKF","OZATD","PEKGY","TEHOL","TERA","TRHOL","ANELE","SELEC","SVGYO",
-  "ALKLC","HEDEF","MANAS","DAPGM","EUPWR","EFOR","GESAN","TMPOL","BIGEN",
-  "KARCL","METEN","SARAE","YKBNK","TURSG","AKSEN","KORDS","IEYHO","ISKPL","LIDER"
-];
+app.use(express.static(path.join(__dirname, 'public')));
 
-const fundSymbols = ["HMV","T3B","ABG","TMM","KVR","PFS"];
+// Bellekte tutulacak güncel fon verileri
+let fundsData = {
+  "TLY": [],
+  "TMV": [],
+  "DFI": []
+};
 
-async function getYahoo(symbol) {
+// TEFAS Üzerinden Canlı Hisse Ağırlıklarını Çeken Bot
+async function fetchTefasData() {
+  console.log("TEFAS üzerinden TLY, TMV ve DFI içerikleri çekiliyor...");
+  let browser = null;
+
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.IS?range=5d&interval=1d&includePrePost=false`;
-    const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 10000 });
-    const meta = res.data.chart.result[0].meta;
-    let current = meta.regularMarketPrice ?? meta.previousClose;
-    let prev = meta.previousClose;
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
 
-    if (!prev) {
-      const closes = res.data.chart.result[0].indicators.quote[0].close.filter(c => c !== null);
-      if (closes.length >= 2) prev = closes[closes.length - 2];
+    const page = await browser.newPage();
+    const targetFunds = ['TLY', 'TMV', 'DFI'];
+
+    for (const fundCode of targetFunds) {
+      try {
+        // TEFAS Detay Sayfasına Git
+        await page.goto(`https://www.tefas.gov.tr/FonAnaliz.aspx?FonKod=${fundCode}`, {
+          waitUntil: 'networkidle2',
+          timeout: 30000
+        });
+
+        // Hisse senedi oranını ve içerikteki hisseleri çek
+        const stockData = await page.evaluate(() => {
+          const items = [];
+          // TEFAS portföy dağılım tablosundaki hisse verilerini tara
+          const rows = document.querySelectorAll('#MainContent_PanelPortfoyDagilim tr');
+          rows.forEach(row => {
+            const cols = row.querySelectorAll('td');
+            if (cols.length >= 2) {
+              const symbol = cols[0].innerText.trim();
+              const weight = parseFloat(cols[1].innerText.replace(',', '.').trim());
+              if (symbol && !isNaN(weight)) {
+                items.push([symbol, weight]);
+              }
+            }
+          });
+          return items;
+        });
+
+        if (stockData.length > 0) {
+          fundsData[fundCode] = stockData;
+          console.log(`${fundCode} içeriği başarıyla çekildi: ${stockData.length} hisse bulundu.`);
+        }
+      } catch (err) {
+        console.error(`${fundCode} çekilirken hata oluştu:`, err.message);
+      }
     }
-    return { symbol, current, previousClose: prev };
-  } catch (e) {
-    return null;
+  } catch (error) {
+    console.error("Puppeteer başlatılamadı:", error.message);
+  } finally {
+    if (browser) await browser.close();
   }
 }
 
-async function getOneTefasFund(symbol) {
-  try {
-    const detailUrl = `https://www.tefas.gov.tr/tr/fon-detayli-analiz/${symbol}`;
-    const apiUrl = "https://www.tefas.gov.tr/api/funds/fonFiyatBilgiGetir";
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json',
-      'Origin': 'https://www.tefas.gov.tr',
-      'Referer': detailUrl
-    };
+// Sunucu başladığında ilk çekimi yap ve her 6 saatte bir yenile
+fetchTefasData();
+setInterval(fetchTefasData, 6 * 60 * 60 * 1000);
 
-    const payload = { fonKodu: symbol, dil: "TR", periyod: 12 };
-    const res = await axios.post(apiUrl, payload, { headers, timeout: 10000 });
-    const rows = res.data.resultList || [];
-
-    const priced = rows.map(r => ({
-      price: parseFloat(String(r.fiyat || r.price || '').replace(',', '.')),
-      date: r.tarih || r.date
-    })).filter(r => !isNaN(r.price)).sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (priced.length === 0) return null;
-
-    const latest = priced[priced.length - 1];
-    const previous = priced.length >= 2 ? priced[priced.length - 2].price : null;
-
-    return { symbol, current: latest.price, previousClose: previous, source: "TEFAS", date: latest.date };
-  } catch (e) {
-    return null;
-  }
-}
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/api/provider', (req, res) => {
-  res.json({ provider: "Yahoo Finance & TEFAS (Node.js)", mode: "cloud", realtimeReady: false });
-});
-
-app.get('/api/prices', async (req, res) => {
-  const out = [];
-  const errors = [];
-
-  const stockPromises = symbols.map(async (s) => {
-    const data = await getYahoo(s);
-    if (data && data.current !== null) out.push(data);
-    else errors.push(s);
-  });
-
-  const fundPromises = fundSymbols.map(async (f) => {
-    const data = await getOneTefasFund(f);
-    if (data && data.current !== null) out.push(data);
-    else errors.push(f);
-  });
-
-  await Promise.all([...stockPromises, ...fundPromises]);
-
-  res.json({
-    okCount: out.length,
-    data: out,
-    errors,
-    updated: new Date().toISOString()
-  });
+// Ön yüze veriyi sunan API
+app.get('/api/fund-weights', (req, res) => {
+  res.json({ success: true, data: fundsData });
 });
 
 app.listen(PORT, () => {
-  console.log(`Sunucu ${PORT} portunda aktif.`);
+  console.log(`Sunucu http://localhost:${PORT} portunda çalışıyor.`);
 });
